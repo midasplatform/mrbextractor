@@ -33,14 +33,14 @@ class Mrbextractor_ExtractComponent extends AppComponent
       {
       $revision = MidasLoader::loadModel('ItemRevision')->load($revision['itemrevision_id']);
       }
-      
+
     if(!$revision) return;
    
     $bitstreams = $revision->getBitstreams();
     $item = $revision->getItem();
     $userDao = $revision->getUser();
     $revisions = $item->getRevisions();
-      
+
     $mrbFound = false;
     foreach($bitstreams as $bitstream)
       {
@@ -51,6 +51,7 @@ class Mrbextractor_ExtractComponent extends AppComponent
         $mrbFound = $bitstream->getName();
         }
       }      
+
     if($mrbFound == false)return;
     
     $rootFolder = UtilityComponent::getTempDirectory()."/mrb_".$revision->getKey();
@@ -71,12 +72,44 @@ class Mrbextractor_ExtractComponent extends AppComponent
     
     if(file_exists($bitstreamsFolder."/index.json"))
       {
+      $sceneContent = JsonComponent::decode(file_get_contents($bitstreamsFolder."/index.json"));
+      $description = "";
+      foreach($sceneContent as $element)
+        {
+        if(isset($element['description']) && !empty($element['description']))
+          {
+          $description .= $element['description']." ;";
+          }
+        
+        if(isset($element['name']) && !empty($element['name']))
+          {
+          $description .= $element['name']." ;";
+          }
+        }
+      $item->setDescription($description);  
+      
       // Create metadata revision which will contain scene and images informations.
       $metadataRevision = false;
+      $category = "Others";
 
       foreach($revisions as $revision)
         {
-        if($revision->getChanges() == "Scenes' metadata") $metadataRevision = $revision;
+        if($revision->getChanges() == "Scenes' metadata") 
+          {
+          $metadataRevision = $revision;
+          continue;          
+          }
+        $metadatas = MidasLoader::loadModel('ItemRevision')->getMetadata($revision); 
+        // trying to find category
+        foreach($metadatas as $m)
+          {
+          if($m->getElement() == "tmp" && $m->getQualifier() == "category")
+            {
+            $category = $m->getValue();
+            MidasLoader::loadModel('ItemRevision')->delete($revision);
+            break;
+            }
+          }
         }
       if(!$metadataRevision)
         {
@@ -168,6 +201,17 @@ class Mrbextractor_ExtractComponent extends AppComponent
         $item->setThumbnailId($thumb->getKey());
         MidasLoader::loadModel("Item")->save($item);
         }
+        
+      // Set the metadata (the goal is to simplify the search using solr
+      $lastRevision = MidasLoader::loadModel("Item")->getLastRevision($item);
+      $metadataDao = MidasLoader::loadModel('Metadata')->getMetadata(MIDAS_METADATA_TEXT, "mrbextrator", "slicerdatastore");
+      if(!$metadataDao)  MidasLoader::loadModel('Metadata')->addMetadata(MIDAS_METADATA_TEXT, "mrbextrator", "slicerdatastore", "");
+      MidasLoader::loadModel('Metadata')->addMetadataValue($lastRevision, MIDAS_METADATA_TEXT, "mrbextrator", "slicerdatastore", "true"); 
+      $metadataDao = MidasLoader::loadModel('Metadata')->getMetadata(MIDAS_METADATA_TEXT, "mrbextrator", "category");
+      if(!$metadataDao)  MidasLoader::loadModel('Metadata')->addMetadata(MIDAS_METADATA_TEXT, "mrbextrator", "category", "");
+      MidasLoader::loadModel('Metadata')->addMetadataValue($lastRevision, MIDAS_METADATA_TEXT, "mrbextrator", "category", $category); 
+            
+      MidasLoader::loadModel("Item")->save($item); // trigger solr update
       }
           
     // Delete temps folder

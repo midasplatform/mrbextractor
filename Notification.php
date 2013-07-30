@@ -32,7 +32,7 @@ class Mrbextractor_Notification extends MIDAS_Notification
   /** Extract the file information */
   public function extractMRB($params)
     {
-    MidasLoader::loadComponent("Extract", "mrbextractor")->extractMRB($params[1]);;
+    MidasLoader::loadComponent("Extract", "mrbextractor")->extractMRB($params[1]);
     return;
     }
     

@@ -42,10 +42,12 @@ if __name__ == '__main__':
     for view in sceneViews:
         s = dict(name=view.get('name'),
                  description = view.get('sceneViewDescription'))
-        storageNode = nodeCache[view.get('storageNodeRef')]
-        s['id'] = view.get('id')
-        s['mrmlFilename'] = urllib.unquote(storageNode.get('fileName'))
-        sceneViewInfo.append(s)
+        key = view.get('storageNodeRef')
+        if key != None:
+          storageNode = nodeCache[view.get('storageNodeRef')]
+          s['id'] = view.get('id')
+          s['mrmlFilename'] = urllib.unquote(storageNode.get('fileName'))
+          sceneViewInfo.append(s)
 
     for viewInfo in sceneViewInfo:
         for z in zipfileSrc.namelist():
