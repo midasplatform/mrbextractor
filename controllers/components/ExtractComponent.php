@@ -106,7 +106,6 @@ class Mrbextractor_ExtractComponent extends AppComponent
           if($m->getElement() == "tmp" && $m->getQualifier() == "category")
             {
             $category = $m->getValue();
-            MidasLoader::loadModel('ItemRevision')->delete($revision);
             break;
             }
           }
