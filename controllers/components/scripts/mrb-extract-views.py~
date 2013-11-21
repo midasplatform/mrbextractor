@@ -35,15 +35,7 @@ if __name__ == '__main__':
     for node in xmlRoot:
         if node.tag in ('SceneView', 'SceneViewStorage'):
             nodeid = node.get('id')
-            node.attrib['order'] = 0
-            nodeCache[nodeid] = node            
-
-    for node in xmlRoot:
-        if node.tag in ('Hierarchy'):
-            nodeid = node.get('associatedNodeRef')
-            sortingValue = node.get('sortingValue')
-            if nodeid in nodeCache:
-              nodeCache[nodeid].attrib['order'] = sortingValue          
+            nodeCache[nodeid] = node
             
     sceneViews = [node for node in nodeCache.values() if node.tag == 'SceneView']
     sceneViewInfo = []
@@ -54,7 +46,6 @@ if __name__ == '__main__':
         if key != None:
           storageNode = nodeCache[view.get('storageNodeRef')]
           s['id'] = view.get('id')
-          s['order'] = view.get('order')
           s['mrmlFilename'] = urllib.unquote(storageNode.get('fileName'))
           sceneViewInfo.append(s)
 
@@ -73,6 +64,7 @@ if __name__ == '__main__':
                 
     toc = json.dumps(sceneViewInfo, sort_keys=True,indent=4, separators=(',', ': '))
 
+    print toc
     try:
       f = open(outputFolder+"/index.json", "w")
       try:
@@ -84,6 +76,7 @@ if __name__ == '__main__':
       
     zipinfos = zipfileSrc.infolist()
     for zipinfo in zipinfos:
+        print zipinfo.filename
         for viewInfo in sceneViewInfo:
             if viewInfo['mrbFilename'] == zipinfo.filename:
               if viewInfo['mrmlFilename'].find("Data Bundle") != -1:

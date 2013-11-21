@@ -90,7 +90,7 @@ class Mrbextractor_ExtractComponent extends AppComponent
       
       // Create metadata revision which will contain scene and images informations.
       $metadataRevision = false;
-      $category = "Others";
+      $categories = array("Others");
 
       foreach($revisions as $revision)
         {
@@ -99,16 +99,12 @@ class Mrbextractor_ExtractComponent extends AppComponent
           $metadataRevision = $revision;
           continue;          
           }
-        $metadatas = MidasLoader::loadModel('ItemRevision')->getMetadata($revision); 
-        // trying to find category
-        foreach($metadatas as $m)
+          
+        $tmp = MidasLoader::loadComponent("Metadata", "slicerdatastore")->getRevisionCategories($revision);
+        if(!empty($tmp))
           {
-          if($m->getElement() == "tmp" && $m->getQualifier() == "category")
-            {
-            $category = $m->getValue();
-            break;
-            }
-          }
+          $categories = $tmp;
+          }       
         }
       if(!$metadataRevision)
         {
@@ -208,8 +204,8 @@ class Mrbextractor_ExtractComponent extends AppComponent
       MidasLoader::loadModel('Metadata')->addMetadataValue($lastRevision, MIDAS_METADATA_TEXT, "mrbextrator", "slicerdatastore", "true"); 
       $metadataDao = MidasLoader::loadModel('Metadata')->getMetadata(MIDAS_METADATA_TEXT, "mrbextrator", "category");
       if(!$metadataDao)  MidasLoader::loadModel('Metadata')->addMetadata(MIDAS_METADATA_TEXT, "mrbextrator", "category", "");
-      MidasLoader::loadModel('Metadata')->addMetadataValue($lastRevision, MIDAS_METADATA_TEXT, "mrbextrator", "category", $category); 
-            
+      
+      MidasLoader::loadComponent("Metadata", "slicerdatastore")->setRevisionCategories($lastRevision, $categories);            
       MidasLoader::loadModel("Item")->save($item); // trigger solr update
       }
           
