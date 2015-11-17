@@ -6,13 +6,16 @@ import zipfile
 import urllib
 import json
 
-if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        print>>sys.stderr, "usage: %s mrbfile outputfolder" % sys.argv[0]
-        sys.exit(1)
+def mrbExtractor(inputFilename, outputFolder):
+    """
+    Output table of content of the given MRB file.
 
-    inputFilename = sys.argv[1]
-    outputFolder = sys.argv[2]
+    Table of content of a MRB file consists of an index file named ``index.json`` and a list of screenshots.
+
+    :param inputFilename: MRB file to process.
+    :param outputFolder: Folder where to store ``index.json`` and associated screenshots.
+    :return:
+    """
 
     zipfileSrc = zipfile.ZipFile(inputFilename, 'r')
 
@@ -82,3 +85,12 @@ if __name__ == '__main__':
                 else:
                     zipinfo.filename = viewInfo['id'] + ".png"
                 zipfileSrc.extract(zipinfo)
+
+if __name__ == '__main__':
+    if len(sys.argv) < 3:
+        print>>sys.stderr, "usage: %s mrbfile outputfolder" % sys.argv[0]
+        sys.exit(1)
+
+    inputFilename = sys.argv[1]
+    outputFolder = sys.argv[2]
+    mrbExtractor(inputFilename, outputFolder)
