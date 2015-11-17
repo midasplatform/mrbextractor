@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import xml.etree.cElementTree as ET
 import sys
 import zipfile
@@ -88,7 +89,7 @@ def mrbExtractor(inputFilename, outputFolder):
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print>>sys.stderr, "usage: %s mrbfile outputfolder" % sys.argv[0]
+        print("usage: %s mrbfile outputfolder" % sys.argv[0], file=sys.stderr)
         sys.exit(1)
 
     inputFilename = sys.argv[1]
