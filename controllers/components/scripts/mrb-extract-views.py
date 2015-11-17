@@ -72,11 +72,8 @@ if __name__ == '__main__':
     toc = json.dumps(sceneViewInfo, sort_keys=True, indent=4, separators=(',', ': '))
 
     try:
-        f = open(outputFolder + "/index.json", "w")
-        try:
+        with open(outputFolder + "/index.json", "w") as f:
             f.write(toc)
-        finally:
-            f.close()
     except IOError:
         pass
       
