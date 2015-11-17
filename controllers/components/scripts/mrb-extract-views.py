@@ -5,12 +5,6 @@ import sys
 import zipfile
 import urllib
 import json
-import os
-
-def getumask():
-    current_umask = os.umask(0)
-    os.umask(current_umask)
-    return current_umask
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
