@@ -1,0 +1,15 @@
+# Ignore all dotfiles...
+.*
+
+# except for .gitignore
+!.gitignore
+
+# Ignore all back-up files
+*~
+*.bak
+
+# Ignore pyc files
+*.pyc
+
+### PyCharm ###
+.idea/
