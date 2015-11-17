@@ -6,6 +6,31 @@ import sys
 import zipfile
 import urllib
 import json
+from os import chdir, getcwd
+from os.path import realpath
+
+class PushdContext:
+    """
+    Context manager allowing to easily pushd/popd.
+
+    Source: https://gist.github.com/Tatsh/7131812
+    """
+    cwd = None
+    original_dir = None
+
+    def __init__(self, dirname):
+        self.cwd = realpath(dirname)
+
+    def __enter__(self):
+        self.original_dir = getcwd()
+        chdir(self.cwd)
+        return self
+
+    def __exit__(self, type, value, tb):
+        chdir(self.original_dir)
+
+def pushd(dirname):
+    return PushdContext(dirname)
 
 def mrbExtractor(inputFilename, outputFolder):
     """
@@ -85,7 +110,8 @@ def mrbExtractor(inputFilename, outputFolder):
                     zipinfo.filename = viewInfo['id'] + "_main.png"
                 else:
                     zipinfo.filename = viewInfo['id'] + ".png"
-                zipfileSrc.extract(zipinfo)
+                with pushd(outputFolder):
+                    zipfileSrc.extract(zipinfo)
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
