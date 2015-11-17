@@ -1,7 +1,6 @@
 import xml.etree.cElementTree as ET
 import sys
 import zipfile
-import os.path
 import urllib
 import json
 import os
@@ -43,26 +42,25 @@ if __name__ == '__main__':
             nodeid = node.get('associatedNodeRef')
             sortingValue = node.get('sortingValue')
             if nodeid in nodeCache:
-              nodeCache[nodeid].attrib['order'] = sortingValue          
+                nodeCache[nodeid].attrib['order'] = sortingValue
             
     sceneViews = [node for node in nodeCache.values() if node.tag == 'SceneView']
     sceneViewInfo = []
     for view in sceneViews:
         s = dict(name=view.get('name'),
-                 description = view.get('sceneViewDescription'))
+                 description=view.get('sceneViewDescription'))
         key = view.get('storageNodeRef')
-        if key != None:
-          storageNode = nodeCache[view.get('storageNodeRef')]
-          s['id'] = view.get('id')
-          s['order'] = view.get('order')
-          s['mrmlFilename'] = urllib.unquote(storageNode.get('fileName'))
-          sceneViewInfo.append(s)
+        if key is not None:
+            storageNode = nodeCache[view.get('storageNodeRef')]
+            s['id'] = view.get('id')
+            s['order'] = view.get('order')
+            s['mrmlFilename'] = urllib.unquote(storageNode.get('fileName'))
+            sceneViewInfo.append(s)
 
     for viewInfo in sceneViewInfo:
         for z in zipfileSrc.namelist():
             if z.endswith(viewInfo['mrmlFilename']):
                 viewInfo['mrbFilename'] = z
-
 
     for viewInfo in sceneViewInfo:
         for z in zipfileSrc.namelist():
@@ -71,14 +69,14 @@ if __name__ == '__main__':
                 newFilename = mrmlFilename.replace('/', '_').replace(' ', '_')
                 viewInfo['filename'] = newFilename
                 
-    toc = json.dumps(sceneViewInfo, sort_keys=True,indent=4, separators=(',', ': '))
+    toc = json.dumps(sceneViewInfo, sort_keys=True, indent=4, separators=(',', ': '))
 
     try:
-      f = open(outputFolder+"/index.json", "w")
-      try:
-        f.write(toc)
-      finally:
-        f.close()
+        f = open(outputFolder + "/index.json", "w")
+        try:
+            f.write(toc)
+        finally:
+            f.close()
     except IOError:
         pass
       
@@ -86,9 +84,8 @@ if __name__ == '__main__':
     for zipinfo in zipinfos:
         for viewInfo in sceneViewInfo:
             if viewInfo['mrbFilename'] == zipinfo.filename:
-              if viewInfo['mrmlFilename'].find("Data Bundle") != -1:
-                  zipinfo.filename = viewInfo['id']+"_main.png"
-              else:
-                  zipinfo.filename = viewInfo['id']+".png"              
-              zipfileSrc.extract(zipinfo)
-
+                if viewInfo['mrmlFilename'].find("Data Bundle") != -1:
+                    zipinfo.filename = viewInfo['id'] + "_main.png"
+                else:
+                    zipinfo.filename = viewInfo['id'] + ".png"
+                zipfileSrc.extract(zipinfo)
