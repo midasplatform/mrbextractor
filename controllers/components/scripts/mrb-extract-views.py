@@ -1,5 +1,24 @@
 #!/usr/bin/env python
 
+#=============================================================================
+# Midas Server
+# Copyright Kitware SAS, 26 rue Louis Guérin, 69100 Villeurbanne, France.
+# All rights reserved.
+# For more information visit http://www.kitware.com/.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0.txt
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#=============================================================================
+
 from __future__ import print_function
 import xml.etree.cElementTree as ET
 import sys
@@ -60,7 +79,7 @@ def mrbExtractor(inputFilename, outputFolder):
         if node.tag in ('SceneView', 'SceneViewStorage'):
             nodeid = node.get('id')
             node.attrib['order'] = 0
-            nodeCache[nodeid] = node            
+            nodeCache[nodeid] = node
 
     for node in xmlRoot:
         if node.tag in ('Hierarchy'):
@@ -68,7 +87,7 @@ def mrbExtractor(inputFilename, outputFolder):
             sortingValue = node.get('sortingValue')
             if nodeid in nodeCache:
                 nodeCache[nodeid].attrib['order'] = sortingValue
-            
+
     sceneViews = [node for node in nodeCache.values() if node.tag == 'SceneView']
     sceneViewInfo = []
     for view in sceneViews:
@@ -93,7 +112,7 @@ def mrbExtractor(inputFilename, outputFolder):
             if z.endswith(mrmlFilename):
                 newFilename = mrmlFilename.replace('/', '_').replace(' ', '_')
                 viewInfo['filename'] = newFilename
-                
+
     toc = json.dumps(sceneViewInfo, sort_keys=True, indent=4, separators=(',', ': '))
 
     try:
@@ -101,7 +120,7 @@ def mrbExtractor(inputFilename, outputFolder):
             f.write(toc)
     except IOError:
         pass
-      
+
     zipinfos = zipfileSrc.infolist()
     for zipinfo in zipinfos:
         for viewInfo in sceneViewInfo:

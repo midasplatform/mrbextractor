@@ -1,9 +1,9 @@
 <?php
 /*=========================================================================
- MIDAS Server
- Copyright (c) Kitware SAS. 26 rue Louis Guérin. 69100 Villeurbanne, FRANCE
+ Midas Server
+ Copyright Kitware SAS, 26 rue Louis Guérin, 69100 Villeurbanne, France.
  All rights reserved.
- More information http://www.kitware.com
+ For more information visit http://www.kitware.com/.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,23 +17,27 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 =========================================================================*/
-/** notification manager*/
+
+/** Notification manager for the mrbextractor module. */
 class Mrbextractor_Notification extends MIDAS_Notification
-  {
-  public $moduleName = 'mrbextractor';
+{
+    /** @var string */
+    public $moduleName = 'mrbextractor';
 
-  /** init notification process*/
-  public function init()
+    /** Initialize the notification process. */
+    public function init()
     {
-    $this->addTask("TASK_EXTRACT_MRB", 'extractMRB', "");
-    $this->addEvent('EVENT_CORE_UPLOAD_FILE', 'TASK_EXTRACT_MRB');
-    }//end init
-
-  /** Extract the file information */
-  public function extractMRB($params)
-    {
-    MidasLoader::loadComponent("Extract", "mrbextractor")->extractMRB($params[1]);
-    return;
+        $this->addTask('TASK_EXTRACT_MRB', 'extractMRB', '');
+        $this->addEvent('EVENT_CORE_UPLOAD_FILE', 'TASK_EXTRACT_MRB');
     }
-    
-  } //end class
+
+    /**
+     * Extract the file information.
+     *
+     * @param array $params
+     */
+    public function extractMRB($params)
+    {
+        MidasLoader::loadComponent('Extract', 'mrbextractor')->extractMRB($params[1]);
+    }
+}

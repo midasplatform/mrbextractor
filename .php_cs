@@ -18,9 +18,21 @@
  limitations under the License.
 =========================================================================*/
 
-/** App controller for the mrbextractor module. */
-class Mrbextractor_AppController extends MIDAS_GlobalModule
-{
-    /** @var string */
-    public $moduleName = 'mrbextractor';
-}
+$finder = Symfony\CS\Finder\DefaultFinder::create()
+    ->in(__DIR__);
+
+$config = Symfony\CS\Config\Config::create()
+    ->level(Symfony\CS\FixerInterface::SYMFONY_LEVEL)
+    ->fixers(array(
+        '-psr0',
+        '-blankline_after_open_tag',
+        '-phpdoc_no_empty_return',
+        '-phpdoc_params',
+        '-phpdoc_separation',
+        '-phpdoc_to_comment',
+        '-phpdoc_var_without_name',
+    ))
+    ->finder($finder)
+    ->setUsingCache(true);
+
+return $config;

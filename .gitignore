@@ -1,8 +1,13 @@
+# Midas Server. Copyright Kitware SAS. Licensed under the Apache License 2.0.
+
 # Ignore all dotfiles...
 .*
 
-# except for .gitignore
+# Except for...
+!.editorconfig
+!.eslintrc
 !.gitignore
+!.php_cs
 
 # Ignore all back-up files
 *~
